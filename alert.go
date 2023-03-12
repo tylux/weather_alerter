@@ -1,22 +1,25 @@
 package main
 
-import twilio "github.com/twilio/twilio-go"
-import openapi "github.com/twilio/twilio-go/rest/api/v2010"
-import "os"
-import "fmt"
+import (
+	"fmt"
 
-func sms(message string) {
-    client := twilio.NewRestClient()
+	twilio "github.com/twilio/twilio-go"
+	openapi "github.com/twilio/twilio-go/rest/api/v2010"
+)
 
-    params := &openapi.CreateMessageParams{}
-    params.SetTo(os.Getenv("TO_PHONE_NUMBER"))
-    params.SetFrom(os.Getenv("TWILIO_PHONE_NUMBER"))
-    params.SetBody(message)
+func sms(config Config, message string) {
+	client := twilio.NewRestClient()
 
-    _, err := client.Api.CreateMessage(params)
-    if err != nil {
-        fmt.Println(err.Error())
-    } else {
-        fmt.Println("SMS sent successfully!")
-    }
+	//move some of these to a global config
+	params := &openapi.CreateMessageParams{}
+	params.SetTo(config.send_to_phone_number)
+	params.SetFrom(config.twilio_phone_number)
+	params.SetBody(message)
+
+	_, err := client.Api.CreateMessage(params)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("SMS sent successfully!")
+	}
 }

@@ -7,23 +7,22 @@ import (
 	"time"
 )
 
-func (w *WeatherData) getWeather(apiKey string, location string, refresh_time int, threshold_temp int) {
-	ticker := time.NewTicker(time.Duration(refresh_time) * time.Minute)
+func (w *WeatherData) getWeather(config Config) {
+	ticker := time.NewTicker(time.Duration(config.polling_interval) * time.Minute)
 
 	// used to only alert once as the temp goes above an then again below the desired temp
 	var aboveThreshold, belowThreshold bool
 
-	fmt.Printf("Getting Weather data for %s on time interval: %d minutes\n", location, refresh_time)
+	fmt.Printf("Getting Weather data for %s on time interval: %d minutes\n", config.location, config.polling_interval)
 	for range ticker.C {
 	
-		url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", location, apiKey)
+		url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", config.location, config.open_weather_api_key)
 
 		resp, err := http.Get(url)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-		//defer resp.Body.Close()
 
 		var weatherData WeatherData
 		if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
@@ -31,7 +30,7 @@ func (w *WeatherData) getWeather(apiKey string, location string, refresh_time in
 		}
 		temperatureF := (weatherData.Main.Temp-273.15)*1.8 + 32
 
-		aboveThreshold, belowThreshold = time_logic(temperatureF, float64(threshold_temp), aboveThreshold, belowThreshold)
+		aboveThreshold, belowThreshold = time_logic(config, temperatureF, float64(config.threshold_temp), aboveThreshold, belowThreshold)
 	}
 }
 
