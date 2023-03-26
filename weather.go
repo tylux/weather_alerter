@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 )
 
 func (w *WeatherData) getWeather(config Config) {
-	ticker := time.NewTicker(time.Duration(config.polling_interval) * time.Minute)
+	ticker := time.NewTicker(time.Duration(config.pollingInterval) * time.Minute)
 
 	// used to only alert once as the temp goes above an then again below the desired temp
 	var aboveThreshold, belowThreshold bool
 
-	fmt.Printf("Getting Weather data for %s on time interval: %d minutes\n", config.location, config.polling_interval)
+	fmt.Printf("Getting Weather data for %s on time interval: %d minutes\n", config.location, config.pollingInterval)
 	for range ticker.C {
-	
-		url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", config.location, config.open_weather_api_key)
+
+		url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", config.location, config.openWeatherApiKey)
 
 		resp, err := http.Get(url)
 		if err != nil {
@@ -30,8 +31,32 @@ func (w *WeatherData) getWeather(config Config) {
 		}
 		temperatureF := (weatherData.Main.Temp-273.15)*1.8 + 32
 
-		aboveThreshold, belowThreshold = time_logic(config, temperatureF, float64(config.threshold_temp), aboveThreshold, belowThreshold)
+		aboveThreshold, belowThreshold = time_logic(config, temperatureF, float64(config.thresholdTemp), aboveThreshold, belowThreshold)
 	}
+}
+
+func time_logic(config Config, curr_temp float64, thresholdTemp float64, aboveThreshold bool, belowThreshold bool) (bool, bool) {
+	// TODO make this logic use UTC and make hour lo gic configurable
+	current_time := time.Now()
+	temperatureString := strconv.Itoa(int(curr_temp)) //why am I converting this
+	if curr_temp > thresholdTemp && int(current_time.Hour()) <= 12 && !aboveThreshold {
+		message := fmt.Sprintf("Current Temp is %s°F time to close windows", temperatureString)
+		fmt.Println(message)
+		aboveThreshold = true
+		belowThreshold = false
+		sms(config, message)
+	} else if curr_temp < thresholdTemp && int(current_time.Hour()) >= 12 && !belowThreshold {
+		message := fmt.Sprintf("Current Temp is %s°F time to open windows", temperatureString)
+		fmt.Println(message)
+		aboveThreshold = false
+		belowThreshold = true
+		sms(config, message)
+	} else {
+		message := fmt.Sprintf("Current Temp is %s°F nothing to do, already alerted", temperatureString)
+		fmt.Println(message)
+	}
+	return aboveThreshold, belowThreshold
+
 }
 
 type WeatherData struct {

@@ -1,4 +1,6 @@
-# consume weather, if temp gets below 70 degrees, text me to open the windows, unless it is after 10pm.
+# Weather Alerter
 
-alternatlivey text me when it is time to closet the windows.
+Uses OpenWeather API to get the current weather for a location and then based on a temperature and time of day, send a text via twilio to open/close windows to save energy.
+
+
 

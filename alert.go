@@ -12,8 +12,8 @@ func sms(config Config, message string) {
 
 	//move some of these to a global config
 	params := &openapi.CreateMessageParams{}
-	params.SetTo(config.send_to_phone_number)
-	params.SetFrom(config.twilio_phone_number)
+	params.SetTo(config.sendToPhoneNumber)
+	params.SetFrom(config.twilioPhoneNumber)
 	params.SetBody(message)
 
 	_, err := client.Api.CreateMessage(params)
