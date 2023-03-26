@@ -1,4 +1,4 @@
-FROM golang:1.20.0-alpine3.17
+FROM golang:1.20.0-alpine3.17 AS builder
 
 
 # Set the working directory to /code
@@ -25,3 +25,5 @@ COPY --from=builder /code/gobin/. .
 
 # Make the binary executable
 RUN chmod +x ./*
+
+CMD ["/code/main"]
