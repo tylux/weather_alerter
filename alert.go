@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	twilio "github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
@@ -16,10 +17,15 @@ func sms(config Config, message string) {
 	params.SetFrom(config.twilioPhoneNumber)
 	params.SetBody(message)
 
-	_, err := client.Api.CreateMessage(params)
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		fmt.Println("SMS sent successfully!")
+	current_hour := time.Now().Hour()
+	
+	if current_hour >= 7 && current_hour <= 20 {
+		_, err := client.Api.CreateMessage(params)
+
+		if err != nil {
+			fmt.Println(err.Error())
+		} else {
+			fmt.Println("SMS sent successfully!")
+		}
 	}
 }
