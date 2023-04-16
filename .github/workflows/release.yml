@@ -1,6 +1,6 @@
 # .github/workflows/release.yaml
 env:
-    GO_VERSION: 1.20.0
+    GO_VERSION: 1.20.0 #todo use this below 
 on:
     release:
       types: [created]
@@ -26,5 +26,5 @@ jobs:
                 github_token: ${{ secrets.GITHUB_TOKEN }}
                 goos: ${{ matrix.goos }}
                 goarch: ${{ matrix.goarch }}
-                goversion: "https://dl.google.com/go/go{{GO_VERSION}}.linux-amd64.tar.gz"
+                goversion: "https://go.dev/dl/go1.20.3.linux-amd64.tar.gz"
                 binary_name: "weather_alerter"
