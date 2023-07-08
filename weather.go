@@ -32,21 +32,20 @@ func (w *WeatherData) getWeather(config Config) {
 		temperatureF := (weatherData.Main.Temp-273.15)*1.8 + 32
 		//current_time := time.Now()
 		current_hour := time.Now().Hour()
-		aboveThreshold, belowThreshold = time_logic(config, temperatureF, current_hour, float64(config.thresholdTemp), aboveThreshold, belowThreshold)
+		aboveThreshold, belowThreshold = temperature_logic(config, temperatureF, current_hour, float64(config.thresholdTemp), aboveThreshold, belowThreshold)
 	}
 }
 
-func time_logic(config Config, curr_temp float64, current_hour int, thresholdTemp float64, aboveThreshold bool, belowThreshold bool) (bool, bool) {
-	// TODO make this logic use UTC and make hour lo gic configurable
-	temperatureString := strconv.Itoa(int(curr_temp)) //why am I converting this
-	// morning alert to close windows
-	if curr_temp > thresholdTemp && current_hour <= 12 && !aboveThreshold {
+func temperature_logic(config Config, curr_temp float64, current_hour int, thresholdTemp float64, aboveThreshold bool, belowThreshold bool) (bool, bool) {
+	// TODO make this logic use UTC and make hour logic configurable
+	temperatureString := strconv.Itoa(int(curr_temp))
+	if curr_temp > thresholdTemp && !aboveThreshold {
 		message := fmt.Sprintf("Current Temp is %s°F time to close windows", temperatureString)
 		fmt.Println(message)
 		aboveThreshold = true
 		belowThreshold = false
 		sms(config, message)
-	} else if curr_temp < thresholdTemp && current_hour >= 12 && !belowThreshold {
+	} else if curr_temp < thresholdTemp && !belowThreshold {
 		message := fmt.Sprintf("Current Temp is %s°F time to open windows", temperatureString)
 		fmt.Println(message)
 		aboveThreshold = false
