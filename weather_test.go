@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestTimeLogic(t *testing.T) {
+func TestTempLogic(t *testing.T) {
 	config := Config{
 		twilioPhoneNumber: "+15017122661",
 		sendToPhoneNumber: "+15558675310",
@@ -19,7 +19,7 @@ func TestTimeLogic(t *testing.T) {
 	current_hour = 10
 	aboveThreshold = false
 	belowThreshold = false
-	aboveThreshold, belowThreshold = time_logic(config, curr_temp, current_hour, thresholdTemp, aboveThreshold, belowThreshold)
+	aboveThreshold, belowThreshold = temperature_logic(config, curr_temp, current_hour, thresholdTemp, aboveThreshold, belowThreshold)
 	if !aboveThreshold || belowThreshold {
 		t.Errorf("time_logic failed, expected (true, false) but got (%t, %t)", aboveThreshold, belowThreshold)
 	}
@@ -29,7 +29,7 @@ func TestTimeLogic(t *testing.T) {
 	current_hour = 14
 	aboveThreshold = false
 	belowThreshold = false
-	aboveThreshold, belowThreshold = time_logic(config, curr_temp, current_hour, thresholdTemp, aboveThreshold, belowThreshold)
+	aboveThreshold, belowThreshold = temperature_logic(config, curr_temp, current_hour, thresholdTemp, aboveThreshold, belowThreshold)
 	if aboveThreshold || !belowThreshold {
 		t.Errorf("time_logic failed, expected (false, true) but got (%t, %t)", aboveThreshold, belowThreshold)
 	}
@@ -39,7 +39,7 @@ func TestTimeLogic(t *testing.T) {
 	current_hour = 20
 	aboveThreshold = false
 	belowThreshold = false
-	aboveThreshold, belowThreshold = time_logic(config, curr_temp, current_hour, thresholdTemp, aboveThreshold, belowThreshold)
+	aboveThreshold, belowThreshold = temperature_logic(config, curr_temp, current_hour, thresholdTemp, aboveThreshold, belowThreshold)
 	if aboveThreshold || belowThreshold {
 		t.Errorf("time_logic failed, expected (false, false) but got (%t, %t)", aboveThreshold, belowThreshold)
 	}
